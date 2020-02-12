@@ -1,0 +1,16 @@
+
+Changes made to Agent.cs to handle manual forwarding
+/// <summary>
+        /// Initializes a new instance of the <see cref="Agent" /> class.
+        /// </summary>
+        public Agent()
+        {
+            
+        }
+
+        //Added For Preceptor Forwarding       
+        [DataMember(Name = "CanEditRecipientEmails", EmitDefaultValue = false)]
+        public string CanEditRecipientEmails { get; set; }
+
+        [DataMember(Name = "CanEditRecipientNames", EmitDefaultValue = false)]
+        public string CanEditRecipientNames { get; set; }

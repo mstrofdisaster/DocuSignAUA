@@ -1,0 +1,628 @@
+using System.Configuration;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using System.Data;
+using System.Data.SqlClient;
+using System.Text;
+using DocuSign.eSign.Api;
+using DocuSign.eSign.Model;
+using DocuSign.eSign.Client;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Document = DocuSign.eSign.Model.Document;
+
+namespace DocuSign_AUA
+{
+    class DocuSignTemplate
+    {
+        static string startDate = "11/28/2016";
+        static string formID = "3";                                                                                     //Form ID change for testing purposes
+        static int batchRunID = 0;
+
+        // Integrator Key (aka API key) is needed to authenticate your API calls.  This is an application-wide key
+        readonly string INTEGRATOR_KEY = ConfigurationManager.AppSettings["INTEGRATOR_KEY"];
+        public string Username { get; } = ConfigurationManager.AppSettings["username"];
+        readonly string password = ConfigurationManager.AppSettings["password"];
+
+        static string StudentClerkshipEvaluationForm = ConfigurationManager.AppSettings["StudentClerkshipEvaluationForm_TemplateID"];                              //Form 1 [Student Only]
+        static string StudentFacultyEvaluationForm = ConfigurationManager.AppSettings["StudentFacultyEvaluationForm_TemplateID"];                                  //Form 2 [Student Only]
+        static string MidClerkshipAssessmentForm = ConfigurationManager.AppSettings["MidClerkshipAssessmentForm_TemplateID"];                                      //Form 3 [Student & Preceptor]
+        static string StudentPortfolioForm = ConfigurationManager.AppSettings["StudentPortfolio_TemplateID"];                                                      //Form 4 [Student Only]
+        static string ComprehensiveStudentClerkshipAssessmentForm = ConfigurationManager.AppSettings["ComprehensiveStudentClerkshipAssessmentForm_TemplateID"];    //Form 5 [Preceptor & DME]
+
+
+        //////////////////////////////////////////////////////////
+        // Main()
+        //////////////////////////////////////////////////////////
+
+
+
+        static void Main(string[] args)
+        {
+            SetHeader();
+
+            GetBatchRunID();
+            Console.Read();
+        }
+
+        public static void SetHeader()
+        {
+            //ApiClient apiClient = DocuSign.eSign.Client.Configuration.Default.ApiClient;
+
+            string authHeader = "{\"Username\":\"" + ConfigurationManager.AppSettings["username"] + "\"," +
+                                " \"Password\":\"" + ConfigurationManager.AppSettings["password"] + "\"," +
+                                " \"IntegratorKey\":\"" + ConfigurationManager.AppSettings["INTEGRATOR_KEY"] + "\"}";
+
+            DocuSign.eSign.Client.Configuration.Default.AddDefaultHeader("X-DocuSign-Authentication", authHeader);
+
+        }
+
+        public static void GetBatchRunID()
+        {
+            string storedProc = "dbo.sp_GetBatchRunID_Demo";
+
+
+            using (SqlConnection SQLCon = new SqlConnection(ConfigurationManager.AppSettings["SMSDB_CONNSTRING2"]))
+            {
+                try
+                {
+                    SqlCommand SQLcmd = new SqlCommand(storedProc, SQLCon);
+                    SQLcmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    SQLcmd.Parameters.AddWithValue("@startDate", startDate).Direction = System.Data.ParameterDirection.Input;
+                    SQLcmd.Parameters.AddWithValue("@sendDate", Convert.ToString(DateTime.Now)).Direction = System.Data.ParameterDirection.Input;
+                    SQLcmd.Parameters.Add("@runId", System.Data.SqlDbType.Int).Direction = System.Data.ParameterDirection.Output;
+
+                    SQLcmd.Connection = SQLCon;
+                    SQLCon.Open();
+                    SQLcmd.ExecuteNonQuery();
+
+                    batchRunID = (int)SQLcmd.Parameters["@runId"].Value;
+
+                    GetStudentRotationInfo(batchRunID);
+                }
+                finally
+                {
+                    SQLCon.Close();
+                    SQLCon.Dispose();
+                }
+            }
+
+        }
+
+        public static void GetStudentRotationInfo(int batchRunID)
+        {
+            SqlConnection conn = null;
+            SqlDataReader rdr = null;
+            string sendDatesProcedure = "sp_DocuSignFormSendDates_Demo";
+            DateTime nextMonday = DateTime.Today.AddDays(((int)DateTime.Today.DayOfWeek - (int)DayOfWeek.Monday) + 7);
+            Student student = new Student();
+            EnvelopeSummary envelopeSumm = new EnvelopeSummary();
+
+            try
+            {
+                conn = new SqlConnection(ConfigurationManager.AppSettings["SMSDB_CONNSTRING2"]);
+                conn.Open();
+
+                var cmd = new SqlCommand(sendDatesProcedure, conn)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+                cmd.Parameters.AddWithValue("@StartDate", startDate);
+
+                rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    student.StudentId = rdr["StudentID"].ToString();
+                    student.StudentFirstName = rdr["StudentFirstName"].ToString();
+                    student.StudentLastName = rdr["StudentLastName"].ToString();
+                    student.StudentName = rdr["StudentName"].ToString();
+                    student.StudentPicturePath = rdr["StudentPicturePath"].ToString();
+                    student.CourseId = rdr["CourseUID"].ToString();
+                    //FOR QA - Uncomment for PROD
+                    //student.StudentEmailSchool  = rdr["StudentEmailSchool"].ToString();
+
+                    //FOR Testing - Comment out for PROD
+                    student.StudentEmailSchool = "cgrenard@auamed.org";
+
+                    student.CourseId = rdr["CourseUID"].ToString();
+                    student.ClinicalRotation = rdr["CourseTitle"].ToString();
+                    student.CreditWeeks = rdr["CourseCreditWeeks"].ToString();
+                    student.ClinicalSite = rdr["HospitalName"].ToString();
+                    student.StartDate = rdr["CourseDateStart"].ToString();
+                    student.EndDate = rdr["CourseDateEnd"].ToString();
+
+                    
+                    envelopeSumm = RequestStudentSignatureFromTemplate(student);
+
+                    //CALL TO INSERT FORMSENT & ENVELOPE_HISTORY RECORDs
+                    InsertFormAndEnvelopeInfo(student, envelopeSumm, batchRunID);
+
+                } //END WHILE LOOP
+
+            } //END Try 
+            finally
+            {
+                // close reader
+                rdr?.Close();
+
+                // close connection
+                conn?.Close();
+            }
+        }
+
+        public static void InsertFormAndEnvelopeInfo(Student student, EnvelopeSummary envelopeSumm, int batchRunId)
+        {
+            string insertProcedure = "dbo.sp_InsertFormAndEnvelopeInfo_Demo";
+
+            using (SqlConnection SQLCon = new SqlConnection(ConfigurationManager.AppSettings["DocuSign_DB_CONNSTRING"]))
+            {
+                try
+                {
+                    SqlCommand SQLcmd = new SqlCommand(insertProcedure, SQLCon);
+
+                    SQLcmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    //  Create the input paramenters
+                    SQLcmd.Parameters.AddWithValue("@batchRunId", batchRunID);
+                    SQLcmd.Parameters.AddWithValue("@formId", formID);
+                    SQLcmd.Parameters.AddWithValue("@studentId", student.StudentId);
+                    SQLcmd.Parameters.AddWithValue("@courseId", student.CourseId);
+                    SQLcmd.Parameters.AddWithValue("@envelopeId", envelopeSumm.EnvelopeId);
+                    SQLcmd.Parameters.AddWithValue("@envelopeStatus", envelopeSumm.Status);
+                    SQLcmd.Parameters.AddWithValue("@statusDate", Convert.ToDateTime(envelopeSumm.StatusDateTime));
+                    SQLcmd.Parameters.AddWithValue("@receipientRoleId", 2);
+
+                    SQLcmd.Connection = SQLCon;
+                    SQLCon.Open();
+                    SQLcmd.ExecuteNonQuery();
+                }
+                finally
+                {
+                    SQLCon.Close();
+                    SQLCon.Dispose();
+                }
+            }
+
+        }
+
+
+        public static EnvelopeSummary RequestStudentSignatureFromTemplate(Student student)
+        {
+
+            //DocuSignTemplate dsTemplate = new DocuSignTemplate();
+
+            // instantiate api client with appropriate environment (for production change to www.docusign.net/restapi)
+            configureApiClient("https://demo.docusign.net/restapi");
+
+
+            //===========================================================
+            // Step 1: Login()
+            //===========================================================
+
+            // call the Login() API which sets the user's baseUrl and returns their accountId
+            //var accountId = loginApi(Username, password);
+
+            //===========================================================
+            // Step 2: Signature Request from Template 
+            //===========================================================
+
+            var envDef = new EnvelopeDefinition { CompositeTemplates = new List<CompositeTemplate>() };
+
+            SetDynamicReminders(student, envDef);
+
+            //===========================================================
+            // Step 3: Create a CompositeTemplate, List<ServerTemplate>,List<InlineTemplate>
+            //===========================================================
+            CompositeTemplate ct = new CompositeTemplate
+            {
+                ServerTemplates = new List<ServerTemplate>(),
+                InlineTemplates = new List<InlineTemplate>()
+            };
+
+
+            ServerTemplate st = new ServerTemplate();
+
+            InlineTemplate it = new InlineTemplate
+            {
+                Recipients = new Recipients(),
+                Documents = new List<Document>()
+            };
+
+            st.Sequence = "2";
+            ct.ServerTemplates.Add(st);
+
+            Recipients r = new Recipients();
+            r.Signers = new List<Signer>();
+
+            // studentSigner = CreateSigner(student.StudentEmailSchool, student.StudentName, templateRoleName, routingOrder, recipientId);
+
+            Signer studentSigner = new Signer();
+            Signer preceptorSigner = new Signer();
+            Signer DMESigner = new Signer();
+            Signer signer = new Signer();
+
+            
+
+
+            string formName = "";
+
+            //Assign the correct template
+            //Adds all controls to List<Recipients>
+
+            switch (formID)
+            {
+                case "1":
+                    formName = "Student Clerkship Evaluation Form";
+                    st.TemplateId = StudentClerkshipEvaluationForm;
+                    envDef.EmailBlurb = "Please complete your Clerkship Evaluation on the last Friday of this rotation.";
+                    envDef.EmailSubject = student.ClinicalRotation + " - Clerkship Evaluation Form";
+                    studentSigner = CreateSigner(student.StudentEmailSchool, student.StudentName, "Student", "1", "1");
+                    r.Signers.Add(studentSigner);
+                    signer = studentSigner;
+                    break;
+
+                case "2":
+                    formName = "Student Faculty Evaluation Form";
+                    st.TemplateId = StudentFacultyEvaluationForm;
+                    envDef.EmailBlurb = "Please complete your Faculty Evaluation on the last Friday of this rotation.";
+                    envDef.EmailSubject = student.ClinicalRotation + " - Faculty Evaluation Form";
+                    studentSigner = CreateSigner(student.StudentEmailSchool, student.StudentName, "Student", "1", "1");
+                    r.Signers.Add(studentSigner);
+                    signer = studentSigner;
+                    break;
+
+                case "3":
+                    formName = "Mid Clerkship Assessment Form";
+                    st.TemplateId = MidClerkshipAssessmentForm;
+                    envDef.EmailBlurb = "Please complete your Mid-Clerkship Assessment Form at the middle of this rotation.";
+                    envDef.EmailSubject = student.StudentFirstName[0] + ". " + student.StudentLastName + " - " + student.ClinicalRotation + " - Mid Clerkship Form - " + student.StartDate;
+                    preceptorSigner = CreateSigner("cgrenard@gmail.com", "Dr. Grenard", "Preceptor", "1", "2");
+                    r.Signers.Add(preceptorSigner);
+
+                    studentSigner = CreateSigner(student.StudentEmailSchool, student.StudentName, "Student", "2", "1");
+                    //r.Signers.Add(preceptorSigner);
+                    r.Signers.Add(studentSigner);
+                    signer = preceptorSigner;
+                    break;
+
+                case "4":
+                    formName = "Student Portfolio Form";
+                    st.TemplateId = StudentPortfolioForm;
+                    envDef.EmailBlurb = "Please complete your Student Portfolio prior to the end of this rotation.";
+                    envDef.EmailSubject = student.StudentFirstName[0] + ". " + student.StudentLastName + " - " + student.ClinicalRotation + " - Portfolio - " + student.StartDate;
+                    studentSigner = CreateSigner(student.StudentEmailSchool, student.StudentName, "Student", "1", "1");
+                    r.Signers.Add(studentSigner);
+
+                    preceptorSigner = CreateSigner("egometi@auamed.org", "Dr. Gometi", "Preceptor", "2", "2");
+                    r.Signers.Add(preceptorSigner);
+                    signer = studentSigner;
+
+                    break;
+
+                case "5":
+                    formName = "Comprehensive Student Clerkship Assessment Form";
+                    st.TemplateId = ComprehensiveStudentClerkshipAssessmentForm;
+                    envDef.EmailBlurb = "Please complete this Comprehensive Clerkship Assessment Form for each respective student.";
+                    envDef.EmailSubject = student.StudentFirstName[0] + ". " + student.StudentLastName + " - " + student.ClinicalRotation + " - Comprehensive Assessment Form - " + student.StartDate;
+                    preceptorSigner = CreateSigner("egometi@auamed.org", "Dr. Gometi", "Preceptor", "1", "2");
+                    r.Signers.Add(preceptorSigner);
+                    DMESigner = CreateSigner("egometi@auamed.org", "Janes Rice, PHd.", "DME", "2", "3");
+                    r.Signers.Add(DMESigner);
+                    signer = preceptorSigner;
+                    break;
+            }
+
+
+            #region FormTabs
+            /*
+            The font type used for the information in the tab. Possible values are: 
+            Arial, ArialNarrow, Calibri, CourierNew, Garamond, Georgia, Helvetica, LucidaConsole, Tahoma, TimesNewRoman, Trebuchet, and Verdana.
+
+            The font size used for the information in the tab. 
+            Possible values are: Size7, Size8, Size9, Size10, Size11, Size12, Size14, Size16, Size18, Size20, Size22, Size24, Size26, Size28, Size36, Size48, or Size72.
+
+            The font color used for the information in the tab. Possible values are: Black, BrightBlue, BrightRed, DarkGreen, DarkRed, Gold, Green, NavyBlue, Purple, or White.
+            */
+
+            //Create a List<> for Checkboxes and add them to the collection
+
+            signer.Tabs.CheckboxTabs = new List<Checkbox>();
+
+            string core = "false";
+            string elective = "false";
+            string rotationType = "";
+
+            rotationType = student.ClinicalRotation;
+            // rotationType = rotationType.ToUpper();
+
+            if (rotationType.ToUpper().Contains("CORE"))
+            {
+                core = "true";
+            }
+            else
+            {
+                elective = "true";
+            }
+
+            Checkbox chkCore = new Checkbox
+            {
+                TabLabel = "chkCore",
+                Selected = core,
+                DocumentId = "2"                     //DEBUG
+            };
+            signer.Tabs.CheckboxTabs.Add(chkCore);
+
+            Checkbox chkElective = new Checkbox
+            {
+                TabLabel = "chkElective",
+                Selected = elective,
+                DocumentId = "2"                     //DEBUG
+            };
+            signer.Tabs.CheckboxTabs.Add(chkElective);
+
+            Text StudentName = new Text
+            {
+                TabLabel = "StudentName",
+                Value = student.StudentFirstName + " " + student.StudentLastName,
+                DocumentId = "2",
+            };
+            signer.Tabs.TextTabs.Add(StudentName);
+
+            Text ClinicalRotationName = new Text
+            {
+                TabLabel = "ClinicalRotationName",
+                Value = student.ClinicalRotation,
+                DocumentId = "2",
+            };
+
+            signer.Tabs.TextTabs.Add(ClinicalRotationName);
+
+            Text ClinicalRotationSite = new Text
+            {
+                TabLabel = "ClinicalRotationSite",
+                Value = student.ClinicalSite,
+                DocumentId = "2"
+            };
+            signer.Tabs.TextTabs.Add(ClinicalRotationSite);
+
+            Text StartDate = new Text
+            {
+                TabLabel = "StartDate",
+                Value = student.StartDate,
+                DocumentId = "2"
+            };
+            signer.Tabs.TextTabs.Add(StartDate);
+
+            Text EndDate = new Text
+            {
+                TabLabel = "EndDate",
+                Value = student.EndDate,
+                DocumentId = "2"
+            };
+            signer.Tabs.TextTabs.Add(EndDate);
+
+            Text txtStudentID = new Text
+            {
+                TabLabel = "txtStudentID",
+                Value = student.StudentId,
+                DocumentId = "2",
+            };
+            signer.Tabs.TextTabs.Add(txtStudentID);
+
+
+            #endregion FormTabs
+
+
+            it.Recipients = r;  //might need to change
+            it.Sequence = "1";
+
+
+            Document doc = new Document
+            {
+                Name = formName,
+                DocumentBase64 = CreatePersonalizedForm(student, Convert.ToInt32(formID)),
+                DocumentId = "2"
+            };
+            //why #2?
+
+            it.Documents.Add(doc);
+
+            ct.InlineTemplates.Add(it);
+            envDef.CompositeTemplates.Add(ct);
+
+            //Setting Status to sent sends the email
+            envDef.Status = "sent";
+
+
+
+            // |EnvelopesApi| contains methods related to creating and sending Envelopes (aka signature requests)
+            EnvelopesApi envelopesApi = new EnvelopesApi();
+            EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(ConfigurationManager.AppSettings["accountId"], envDef);
+
+            //UPDATE Form_Sent & INSERT EnvelopeHistory
+            var envId = envelopeSummary.EnvelopeId;
+            //Console.WriteLine("EnvelopeId: " + envId + "\n");
+            //
+
+            // print the JSON response
+            Console.WriteLine("EnvelopeSummary:\n{0}", JsonConvert.SerializeObject(envelopeSummary));
+
+            //write a log file method or store to DB to show file was sent
+
+            return envelopeSummary;
+
+        }
+
+        private static void SetDynamicReminders(Student student, EnvelopeDefinition envDef)
+        {
+            string newReminderDelay = "";
+
+            switch (student.CreditWeeks)
+            {
+                case "4":
+                    newReminderDelay = "28";
+                    break;
+                case "6":
+                    newReminderDelay = "42";
+                    break;
+                case "8":
+                    newReminderDelay = "56";
+                    break;
+                case "12":
+                    newReminderDelay = "84";
+                    break;
+                default:
+                    newReminderDelay = "14";
+                    break;
+            }
+
+            //Set Dynamic Notifications
+            envDef.Notification = new Notification
+            {
+                UseAccountDefaults = "false",
+                Reminders = new Reminders
+                {
+                    ReminderEnabled = "true",
+                    ReminderFrequency = "2",
+                    ReminderDelay = newReminderDelay
+                },
+                Expirations = new Expirations
+                {
+                    ExpireEnabled = "true",
+                    ExpireWarn = "7",
+                    ExpireAfter = "120"
+                }
+            };
+        }
+
+// end requestSignatureFromTemplateTest()
+
+
+        public static string CreatePersonalizedForm(Student s, int pdfFormId)
+        {
+            string currentForm = "";
+            string outputForm = "";
+            string imagePath = "";
+
+
+
+            imagePath = @"w:\data\aua\StudentPhotos\" + s.StudentPicturePath + "_" + s.StudentId + ".jpg";
+            //imagePath.Replace(" ", "");
+
+            switch (pdfFormId)
+            {
+                case 1:
+                    currentForm = @"C:\Docusign\AUA_Forms\StudentClerkshipEvaluationForm.pdf";
+                    outputForm = @"C:\Docusign\AUA_Forms\StudentClerkshipEvaluationForm_" + s.StudentId + ".pdf";
+                    break;
+                case 2:
+                    currentForm = @"C:\Docusign\AUA_Forms\StudentFacultyEvaluationForm.pdf";
+                    outputForm = @"C:\Docusign\AUA_Forms\StudentFacultyEvaluationForm_" + s.StudentId + ".pdf";
+                    break;
+                case 3:
+                    currentForm = @"C:\Docusign\AUA_Forms\MidClerkshipAssessmentForm.pdf";
+                    outputForm = @"C:\Docusign\AUA_Forms\MidClerkshipAssessmentForm_" + s.StudentId + ".pdf";
+                    break;
+                case 4:
+                    currentForm = @"C:\Docusign\AUA_Forms\StudentPortfolioForm.pdf";
+                    outputForm = @"C:\Docusign\AUA_Forms\StudentPortfolioForm_" + s.StudentId + ".pdf";
+                    break;
+                case 5:
+                    currentForm = @"C:\Docusign\AUA_Forms\ComprehensiveStudentClerkshipAssessmentForm.pdf";
+                    outputForm = @"C:\Docusign\AUA_Forms\ComprehensiveStudentClerkshipAssessmentForm_" + s.StudentId + ".pdf";
+                    break;
+
+            }
+
+
+
+            //Step 1: Open the PDF form to be sent
+            using (Stream inputPdfStream = new FileStream(currentForm, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+            //Step 2: Identify the Student Image to be inserted
+            using (Stream inputImageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+            //Step 3: Create a new instance of the form with the Student's Picture Inserted
+            using (Stream outputPdfStream = new FileStream(outputForm, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+            {
+                PdfReader reader = new PdfReader(inputPdfStream);
+                PdfStamper stamper = new PdfStamper(reader, outputPdfStream);
+                PdfContentByte pdfContentByte = stamper.GetOverContent(1);
+
+                Image image = Image.GetInstance(inputImageStream);
+                image.ScaleAbsoluteHeight(150);
+                image.ScaleAbsoluteWidth(150);
+
+                image.Border = 1;
+                image.BorderWidth = 3;
+                image.BorderWidthRight = 3;
+                image.BorderWidthLeft = 3;
+                image.BorderWidthBottom = 3;
+
+                image.SetAbsolutePosition(34, 504);
+                pdfContentByte.AddImage(image);
+                stamper.Close();
+
+                byte[] bytes = File.ReadAllBytes(outputForm);
+
+                //delete output form
+                //outputForm.
+
+                string returnPdf = Convert.ToBase64String(bytes);
+
+                
+                return returnPdf;
+
+            }
+
+        }
+
+
+
+        private static Signer CreateSigner(string recipientEmail, string recipientName, string templateRoleName, string routingOrder, string recipientId)
+        {
+            Signer signer = new Signer
+            {
+                Email = recipientEmail,
+                Name = recipientName,
+                RoleName = templateRoleName,
+                RoutingOrder = routingOrder,
+                RecipientId = recipientId,
+                Tabs = new Tabs { TextTabs = new List<Text>() }
+            };
+
+            //Only create once for Recipient/Signer
+            //Each recip gets their own tabs
+            return signer;
+
+        }
+
+
+
+
+        //**********************************************************************************************************************
+        //**********************************************************************************************************************
+        //*  HELPER FUNCTIONS
+        //**********************************************************************************************************************
+        //**********************************************************************************************************************
+        public static void configureApiClient(string basePath)
+        {
+            // instantiate a new api client
+            ApiClient apiClient = new ApiClient(basePath);
+
+            // set client in global config so we don't need to pass it to each API object.
+            DocuSign.eSign.Client.Configuration.Default.ApiClient = apiClient;
+
+        }
+
+
+
+    } // end class
+
+
+} //end namespace
+

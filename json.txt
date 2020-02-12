@@ -1,0 +1,643 @@
+{
+  "signers": [
+    {
+      "tabs": {
+        "signHereTabs": [
+          {
+            "name": "Sign Here",
+            "tabLabel": "Signature 13",
+            "scaleValue": 1,
+            "optional": "false",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "2",
+            "xPosition": "38",
+            "yPosition": "618",
+            "tabId": "f79ab071-7e69-4a95-b9d1-d1f726bf5051",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          }
+        ],
+        "fullNameTabs": [
+          {
+            "name": "FullName",
+            "tabLabel": "txtStudentFullName",
+            "font": "lucidaconsole",
+            "fontColor": "black",
+            "fontSize": "size9",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "190",
+            "yPosition": "154",
+            "tabId": "8ce5df24-56b6-4305-8661-a2dc17bd5fd8",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "name": "Full Name",
+            "tabLabel": "Full Name",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "2",
+            "xPosition": "223",
+            "yPosition": "667",
+            "tabId": "afdacf21-9712-4ce8-9a71-cf11c42b13dc",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          }
+        ],
+        "dateSignedTabs": [
+          {
+            "name": "Date Signed",
+            "value": "",
+            "tabLabel": "Date Signed",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "2",
+            "xPosition": "395",
+            "yPosition": "669",
+            "tabId": "90073d49-5b59-4dcd-8c6e-7da62a29c45c",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          }
+        ],
+        "textTabs": [
+          {
+            "height": 11,
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false",
+            "value": "Internal Medicine",
+            "width": 138,
+            "required": "false",
+            "locked": "true",
+            "concealValueOnDocument": "false",
+            "disableAutoSize": "true",
+            "tabLabel": "ClinicalRotationName",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "186",
+            "yPosition": "184",
+            "tabId": "21f75bb9-025c-4e8f-a62e-7728eaf25ab0",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "height": 11,
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false",
+            "value": "General Hospital",
+            "width": 210,
+            "required": "false",
+            "locked": "true",
+            "concealValueOnDocument": "false",
+            "disableAutoSize": "false",
+            "tabLabel": "ClinicalRotationSite",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "190",
+            "yPosition": "229",
+            "tabId": "fcbb4651-d1b7-45d3-8c7f-ab7c559ef00c",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "height": 11,
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false",
+            "value": "7/25/2016",
+            "width": 42,
+            "required": "false",
+            "locked": "true",
+            "concealValueOnDocument": "false",
+            "disableAutoSize": "false",
+            "tabLabel": "StartDate",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "427",
+            "yPosition": "188",
+            "tabId": "300361da-17be-44cf-8895-d14b43226602",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "height": 11,
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false",
+            "value": "9/5/2016",
+            "width": 42,
+            "required": "false",
+            "locked": "true",
+            "concealValueOnDocument": "false",
+            "disableAutoSize": "false",
+            "tabLabel": "EndDate",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "519",
+            "yPosition": "186",
+            "tabId": "0e981d8d-8970-4158-b100-116b81a35ddd",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "height": 11,
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false",
+            "value": "101210",
+            "width": 60,
+            "required": "false",
+            "locked": "true",
+            "concealValueOnDocument": "false",
+            "disableAutoSize": "false",
+            "tabLabel": "txtStudentID",
+            "font": "arial",
+            "fontColor": "black",
+            "fontSize": "size9",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "396",
+            "yPosition": "151",
+            "tabId": "46817a06-eed7-441e-8db6-be8929bf818b",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "height": 55,
+            "validationPattern": "",
+            "validationMessage": "",
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false",
+            "name": "Text",
+            "value": "",
+            "width": 522,
+            "required": "false",
+            "locked": "false",
+            "concealValueOnDocument": "false",
+            "disableAutoSize": "true",
+            "tabLabel": "txtStudentComments",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "2",
+            "xPosition": "55",
+            "yPosition": "577",
+            "tabId": "ee66696e-439d-490a-80f8-634e3d94ae1b",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          }
+        ],
+        "checkboxTabs": [
+          {
+            "name": "Core",
+            "tabLabel": "chkCore",
+            "selected": "false",
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "required": "false",
+            "locked": "false",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "327",
+            "yPosition": "176",
+            "tabId": "cdd1d1d1-a3ca-4db9-8c84-3ce63d459c63",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          },
+          {
+            "name": "Checkbox",
+            "tabLabel": "chkElective",
+            "selected": "false",
+            "shared": "false",
+            "requireInitialOnSharedChange": "false",
+            "required": "false",
+            "locked": "false",
+            "documentId": "1",
+            "recipientId": "1",
+            "pageNumber": "1",
+            "xPosition": "327",
+            "yPosition": "187",
+            "tabId": "8d10e18a-ffcc-46dc-bad1-31289409d608",
+            "templateLocked": "false",
+            "templateRequired": "false"
+          }
+        ],
+        "radioGroupTabs": [
+          {
+            "documentId": "1",
+            "recipientId": "1",
+            "groupName": "rdoQuestion1",
+            "radios": [
+              {
+                "pageNumber": "1",
+                "xPosition": "61",
+                "yPosition": "395",
+                "value": "Exceeded",
+                "selected": "false",
+                "tabId": "b470b443-8f33-4750-ae8b-6e07b05cbd8c",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "61",
+                "yPosition": "413",
+                "value": "Above Average",
+                "selected": "false",
+                "tabId": "13ba9e13-c327-48b9-8826-dc0a036d1130",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "61",
+                "yPosition": "431",
+                "value": "Average",
+                "selected": "false",
+                "tabId": "1e3af736-3b75-4093-9928-1e2fae5bcd7e",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "61",
+                "yPosition": "448",
+                "value": "Below Average",
+                "selected": "true",
+                "tabId": "7230c25d-6bac-4327-bff8-aec2bde8a92a",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "61",
+                "yPosition": "467",
+                "value": "Poor",
+                "selected": "false",
+                "tabId": "dc8d7d54-738e-488b-ad3b-5c154e50e7c4",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "61",
+                "yPosition": "484",
+                "value": "Not Applicable",
+                "selected": "false",
+                "tabId": "8cdb35ea-5c60-4be2-932c-3dc562746ae5",
+                "required": "True",
+                "locked": "False"
+              }
+            ],
+            "shared": "False",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false"
+          },
+          {
+            "documentId": "1",
+            "recipientId": "1",
+            "groupName": "rdoQuestion2",
+            "radios": [
+              {
+                "pageNumber": "1",
+                "xPosition": "60",
+                "yPosition": "524",
+                "value": "Exceeded",
+                "selected": "false",
+                "tabId": "af4e005e-c9f9-48dc-909b-708d1d886682",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "60",
+                "yPosition": "542",
+                "value": "Above Average",
+                "selected": "false",
+                "tabId": "310dbd1c-1fd0-4f63-bb75-18c1520c63c7",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "60",
+                "yPosition": "560",
+                "value": "Average",
+                "selected": "false",
+                "tabId": "e21e5d8a-779f-49b7-a9dd-18187fd0171b",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "60",
+                "yPosition": "577",
+                "value": "Below Average",
+                "selected": "false",
+                "tabId": "509f70e0-a2fb-48c5-8c09-1294e8f40d4d",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "60",
+                "yPosition": "595",
+                "value": "Poor",
+                "selected": "false",
+                "tabId": "cda311dd-ef85-4aad-9bc0-1738816fff56",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "1",
+                "xPosition": "60",
+                "yPosition": "612",
+                "value": "Not Applicable",
+                "selected": "true",
+                "tabId": "68d0030f-fc13-45f4-92ac-24f8be754336",
+                "required": "True",
+                "locked": "False"
+              }
+            ],
+            "shared": "False",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false"
+          },
+          {
+            "documentId": "1",
+            "recipientId": "1",
+            "groupName": "rdoQuestion5",
+            "radios": [
+              {
+                "pageNumber": "2",
+                "xPosition": "60",
+                "yPosition": "367",
+                "value": "Exceeded",
+                "selected": "false",
+                "tabId": "21eb7e2d-ecdb-492b-b692-037d25162958",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "60",
+                "yPosition": "385",
+                "value": "Above Average",
+                "selected": "false",
+                "tabId": "a7f4b228-1bb3-4a9a-b8ee-c8513f621872",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "60",
+                "yPosition": "403",
+                "value": "Average",
+                "selected": "false",
+                "tabId": "c5dcd14d-a456-4066-a6d3-7262bb558914",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "60",
+                "yPosition": "420",
+                "value": "Below Average",
+                "selected": "false",
+                "tabId": "09c9b0f8-4898-4be1-95e5-3d1839294ebc",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "60",
+                "yPosition": "439",
+                "value": "Poor",
+                "selected": "true",
+                "tabId": "1c1a323c-cb0b-4ea5-a159-d9db91f6c0a3",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "60",
+                "yPosition": "456",
+                "value": "Not Applicable",
+                "selected": "false",
+                "tabId": "decbe982-1904-4754-91e7-0681ff037708",
+                "required": "True",
+                "locked": "False"
+              }
+            ],
+            "shared": "False",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false"
+          },
+          {
+            "documentId": "1",
+            "recipientId": "1",
+            "groupName": "rdoQuestion3",
+            "radios": [
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "72",
+                "value": "Exceeded",
+                "selected": "false",
+                "tabId": "49280caf-934f-45db-b5df-a111ee6b34a8",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "90",
+                "value": "Above Average",
+                "selected": "false",
+                "tabId": "1775d7fc-6a5f-42da-827c-974b29e6b8f7",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "108",
+                "value": "Average",
+                "selected": "false",
+                "tabId": "1c543898-0769-4993-b9b4-60f0a7cf0beb",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "125",
+                "value": "Below Average",
+                "selected": "false",
+                "tabId": "7afd9730-dc0c-4db3-845a-1c6be0b1dcec",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "144",
+                "value": "Poor",
+                "selected": "false",
+                "tabId": "2aadaee8-119e-402c-8b27-6767efc20d68",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "160",
+                "value": "Not Applicable",
+                "selected": "false",
+                "tabId": "ee96c0b1-0fd2-4b27-b1d2-97425dc67fdd",
+                "required": "True",
+                "locked": "False"
+              }
+            ],
+            "shared": "False",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false"
+          },
+          {
+            "documentId": "1",
+            "recipientId": "1",
+            "groupName": "rdoQuestion4",
+            "radios": [
+              {
+                "pageNumber": "2",
+                "xPosition": "62",
+                "yPosition": "238",
+                "value": "Exceeded",
+                "selected": "false",
+                "tabId": "5f2df175-11aa-43ce-abc7-b4624c8c8f96",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "62",
+                "yPosition": "256",
+                "value": "Above Average",
+                "selected": "false",
+                "tabId": "54dd686f-6cfb-449e-ad55-248f5d5135ac",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "62",
+                "yPosition": "274",
+                "value": "Average",
+                "selected": "false",
+                "tabId": "1074f1d9-d805-4aca-bde4-e3fa8fb3219c",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "62",
+                "yPosition": "291",
+                "value": "Below Average",
+                "selected": "false",
+                "tabId": "33a9c7d8-f3fd-4fbd-b09b-5f93817f63d5",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "62",
+                "yPosition": "310",
+                "value": "Poor",
+                "selected": "false",
+                "tabId": "23b80aab-2454-4418-a796-58e756a50636",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "62",
+                "yPosition": "327",
+                "value": "Not Applicable",
+                "selected": "true",
+                "tabId": "567573be-7757-4703-a9f7-649a2cfbc6e0",
+                "required": "True",
+                "locked": "False"
+              }
+            ],
+            "shared": "False",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false"
+          },
+          {
+            "documentId": "1",
+            "recipientId": "1",
+            "groupName": "rdoQuestion6",
+            "radios": [
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "497",
+                "value": "Yes",
+                "selected": "false",
+                "tabId": "77051036-025f-47e2-96f9-92cb1151b7b6",
+                "required": "True",
+                "locked": "False"
+              },
+              {
+                "pageNumber": "2",
+                "xPosition": "61",
+                "yPosition": "515",
+                "value": "No",
+                "selected": "true",
+                "tabId": "da1a76a8-f3c8-449e-a63c-cd6a8e1bc5b3",
+                "required": "True",
+                "locked": "False"
+              }
+            ],
+            "shared": "False",
+            "requireInitialOnSharedChange": "false",
+            "requireAll": "false"
+          }
+        ]
+      },
+      "signInEachLocation": "false",
+      "isBulkRecipient": "false",
+      "name": "Blake Carrington",
+      "email": "cgrenard@auamed.org",
+      "recipientId": "1",
+      "recipientIdGuid": "83af7f01-4bcf-45e3-97e4-b0d0b92843d5",
+      "requireIdLookup": "false",
+      "userId": "2852bdcc-b766-4d65-a02b-90c38ea0f0f2",
+      "routingOrder": "1",
+      "roleName": "Student",
+      "status": "delivered",
+      "deliveredDateTime": "2016-08-09T14:43:56.3870000Z",
+      "templateLocked": "false",
+      "templateRequired": "false",
+      "totalTabCount": "44"
+    }
+  ],
+  "agents": [],
+  "editors": [],
+  "intermediaries": [],
+  "carbonCopies": [],
+  "certifiedDeliveries": [],
+  "inPersonSigners": [],
+  "recipientCount": "1",
+  "currentRoutingOrder": "1"
+}

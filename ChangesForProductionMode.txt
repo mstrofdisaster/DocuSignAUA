@@ -1,0 +1,5 @@
+﻿1. Change App.Config sections
+2. Change API call setting in Program.cs
+
+
+

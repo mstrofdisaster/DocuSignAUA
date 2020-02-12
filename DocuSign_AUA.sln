@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocuSign_AUA", "DocuSign_AUA\DocuSign_AUA.csproj", "{BEE1730E-A5D7-42FB-8955-975371ABE16B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B68657E-8672-4FB4-84C7-DA03664E177F}"
+	ProjectSection(SolutionItems) = preProject
+		API_Updates.txt = API_Updates.txt
+		HTMLPage1.html = HTMLPage1.html
+		DocuSign_AUA\Program.cs = DocuSign_AUA\Program.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BEE1730E-A5D7-42FB-8955-975371ABE16B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEE1730E-A5D7-42FB-8955-975371ABE16B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEE1730E-A5D7-42FB-8955-975371ABE16B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE1730E-A5D7-42FB-8955-975371ABE16B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {041B0CA1-9B6F-4923-95E0-85487340B005}
+	EndGlobalSection
+EndGlobal
